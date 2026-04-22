@@ -2,7 +2,7 @@
 
 Deterministic pipeline:
 
-`User Input → Story Expansion → Director Engine → Timeline JSON → Sync Engine → Animation Engine → Renderer → Video`
+`User Input -> Story Expansion -> Director Engine -> Timeline JSON -> Sync Engine -> Animation Engine -> Renderer -> Video`
 
 ## Requirements
 
@@ -11,13 +11,13 @@ Deterministic pipeline:
 
 ## Setup
 
-1) Install dependencies
+1. Install dependencies
 
 ```bash
 npm install
 ```
 
-2) Start PostgreSQL + initialize schema
+2. Start PostgreSQL + initialize schema
 
 ```bash
 docker compose up -d
@@ -29,7 +29,7 @@ Or apply schema to an existing database:
 npm run db:migrate
 ```
 
-3) Configure env
+3. Configure env
 
 ```bash
 copy .env.example .env.local
@@ -37,13 +37,13 @@ copy .env.example .env.local
 
 Set `JWT_SECRET` to a strong value (min 16 chars). `DATABASE_URL` in `.env.local` is already correct for the provided `docker-compose.yml`.
 
-4) Run the app
+4. Run the app
 
 ```bash
 npm run dev
 ```
 
-Open http://localhost:3000
+Open `http://localhost:3000`
 
 ## Notes
 
@@ -64,7 +64,7 @@ Recommended: container deploy (Node runtime required for FFmpeg + native canvas 
 docker compose -f docker-compose.app.yml up -d --build
 ```
 
-Then open http://localhost:3000
+Then open `http://localhost:3000`
 
 Environment variables for production:
 
@@ -76,20 +76,24 @@ Environment variables for production:
 
 You can deploy the app UI + APIs to Vercel, but note the platform function execution limits:
 
-- Vercel Functions default to 300s and (on Pro/Enterprise) can be configured up to 800s. citeturn3search2turn3search6
-- The maximum uncompressed bundle size per function is 250 MB. citeturn3search0turn3search4
+- On Hobby, Vercel Functions can be configured up to `300s`. Pro and Enterprise can go higher. [Vercel docs](https://vercel.com/docs/functions/limitations/) [Duration config](https://vercel.com/docs/functions/configuring-functions/duration)
+- The maximum uncompressed bundle size per function is `250 MB`. [Vercel function limits](https://vercel.com/docs/functions/limitations/)
 
 Steps:
 
-1) Import the GitHub repo in Vercel
-2) Set project env vars:
-   - `DATABASE_URL`
-   - `JWT_SECRET` (>= 16 chars)
-   - `RENDER_CONCURRENCY=1`
-3) Deploy
-4) Verify health at `/api/health`
+1. Import the GitHub repo in Vercel
+2. Set project env vars:
+
+```text
+DATABASE_URL=<your-pooled-neon-connection-string>
+JWT_SECRET=<strong-random-secret>
+RENDER_CONCURRENCY=1
+```
+
+3. Deploy
+4. Verify health at `/api/health`
 
 Render endpoint notes:
 
-- `/api/render` runs server-side FFmpeg + native canvas; large dependencies may hit the 250MB function limit. If that happens, set `VERCEL_ANALYZE_BUILD_OUTPUT=1` and redeploy to see function sizes. citeturn3search4
-- For long renders, you may need to offload rendering to a separate worker service instead of running it inline in a request/response cycle. citeturn3search8
+- `/api/render` runs server-side FFmpeg + native canvas; large dependencies may hit the `250MB` function limit. If that happens, set `VERCEL_ANALYZE_BUILD_OUTPUT=1` and redeploy to inspect function size.
+- For long renders, you may eventually want to offload rendering to a separate worker service instead of keeping it inline in the request/response path.
