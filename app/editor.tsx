@@ -9,9 +9,22 @@ type MeResponse = { user: { id: string; email: string } | null };
 
 async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, { ...init, headers: { "content-type": "application/json", ...(init?.headers ?? {}) } });
-  const data = await res.json().catch(() => null);
+  const raw = await res.text();
+  let data: any = null;
+  if (raw) {
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      data = null;
+    }
+  }
   if (!res.ok) {
-    const msg = data?.error ? String(data.error) : `Request failed (${res.status})`;
+    const msg =
+      data?.error
+        ? String(data.error)
+        : raw && raw.length < 300
+          ? raw
+          : `Request failed (${res.status})`;
     throw new Error(msg);
   }
   return data as T;
@@ -113,8 +126,16 @@ export default function Editor() {
         body: JSON.stringify({ timeline, config: { width: 720, height: 420, fps: 30, background: "night" } })
       });
       if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        throw new Error(data?.error ?? `Render failed (${res.status})`);
+        const raw = await res.text();
+        let data: any = null;
+        if (raw) {
+          try {
+            data = JSON.parse(raw);
+          } catch {
+            data = null;
+          }
+        }
+        throw new Error(data?.error ?? (raw && raw.length < 300 ? raw : `Render failed (${res.status})`));
       }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
