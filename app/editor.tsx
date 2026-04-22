@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import CanvasPlayer from "@/components/CanvasPlayer";
+import { exportTimelineInBrowser } from "@/lib/clientVideo";
 import type { ExpandedStory } from "@/types/story";
 import type { Timeline } from "@/types/timeline";
-import CanvasPlayer from "@/components/CanvasPlayer";
 
 type MeResponse = { user: { id: string; email: string } | null };
 
@@ -19,12 +20,7 @@ async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
     }
   }
   if (!res.ok) {
-    const msg =
-      data?.error
-        ? String(data.error)
-        : raw && raw.length < 300
-          ? raw
-          : `Request failed (${res.status})`;
+    const msg = data?.error ? String(data.error) : raw && raw.length < 300 ? raw : `Request failed (${res.status})`;
     throw new Error(msg);
   }
   return data as T;
@@ -38,6 +34,7 @@ export default function Editor() {
   const [timeline, setTimeline] = useState<Timeline | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
 
   const [me, setMe] = useState<MeResponse["user"]>(null);
   const [email, setEmail] = useState("");
@@ -57,6 +54,7 @@ export default function Editor() {
 
   const onGenerate = async () => {
     setError(null);
+    setStatus(null);
     setSavedSlug(null);
     setBusy(true);
     try {
@@ -76,6 +74,7 @@ export default function Editor() {
 
   const onAuth = async (action: "register" | "login" | "logout") => {
     setError(null);
+    setStatus(null);
     setBusy(true);
     try {
       const data = await fetchJson<MeResponse>("/api/auth", {
@@ -95,6 +94,7 @@ export default function Editor() {
   const onSave = async () => {
     if (!expanded || !timeline) return;
     setError(null);
+    setStatus(null);
     setBusy(true);
     try {
       const data = await fetchJson<{ slug: string }>("/api/story", {
@@ -108,6 +108,7 @@ export default function Editor() {
         })
       });
       setSavedSlug(data.slug);
+      setStatus("Story saved.");
     } catch (e: any) {
       setError(e?.message ?? "Save failed");
     } finally {
@@ -117,14 +118,18 @@ export default function Editor() {
 
   const onExport = async () => {
     if (!timeline) return;
+
     setError(null);
+    setStatus("Preparing export...");
     setBusy(true);
+
     try {
       const res = await fetch("/api/render", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ timeline, config: { width: 720, height: 420, fps: 30, background: "night" } })
       });
+
       if (!res.ok) {
         const raw = await res.text();
         let data: any = null;
@@ -137,6 +142,7 @@ export default function Editor() {
         }
         throw new Error(data?.error ?? (raw && raw.length < 300 ? raw : `Render failed (${res.status})`));
       }
+
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -146,8 +152,32 @@ export default function Editor() {
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-    } catch (e: any) {
-      setError(e?.message ?? "Export failed");
+      setStatus("MP4 export complete.");
+    } catch (serverError: any) {
+      try {
+        setStatus("Server export unavailable. Recording browser video in real time...");
+        const result = await exportTimelineInBrowser(timeline, {
+          width: 720,
+          height: 420,
+          fps: 30,
+          onProgress: (progress) => {
+            setStatus(`Recording browser video... ${Math.round(progress * 100)}%`);
+          }
+        });
+
+        const url = URL.createObjectURL(result.blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `stickstory.${result.extension}`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        setStatus("Browser video export complete.");
+      } catch (fallbackError: any) {
+        setStatus(null);
+        setError(fallbackError?.message ?? serverError?.message ?? "Export failed");
+      }
     } finally {
       setBusy(false);
     }
@@ -164,16 +194,17 @@ export default function Editor() {
               onClick={onGenerate}
               className="rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-zinc-900 hover:bg-zinc-200 disabled:opacity-50"
             >
-              {busy ? "Working…" : "Generate"}
+              {busy ? "Working..." : "Generate"}
             </button>
           </div>
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             className="mt-3 h-44 w-full resize-none rounded-xl border border-zinc-800 bg-zinc-950/40 p-3 text-sm text-zinc-100 outline-none focus:border-zinc-600"
-            placeholder="Paste a short story prompt…"
+            placeholder="Paste a short story prompt..."
           />
           {error ? <div className="mt-3 text-sm text-red-300">{error}</div> : null}
+          {status ? <div className="mt-3 text-sm text-emerald-300">{status}</div> : null}
         </div>
 
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/30 p-5">
@@ -258,7 +289,7 @@ export default function Editor() {
                 onClick={onExport}
                 className="rounded-lg border border-zinc-700 px-3 py-1.5 text-sm hover:bg-zinc-900 disabled:opacity-50"
               >
-                Export MP4 (FFmpeg)
+                Export Video
               </button>
             </div>
             {savedSlug ? (
@@ -278,11 +309,11 @@ export default function Editor() {
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/30 p-5">
           <div className="flex items-center justify-between">
             <div className="text-sm font-semibold text-zinc-200">Playback</div>
-            {timeline ? (
-              <div className="text-xs text-zinc-400">{Math.round(timeline.total_duration)}s timeline</div>
-            ) : null}
+            {timeline ? <div className="text-xs text-zinc-400">{Math.round(timeline.total_duration)}s timeline</div> : null}
           </div>
-          <div className="mt-4">{timeline ? <CanvasPlayer timeline={timeline} /> : <div className="text-sm text-zinc-500">Generate to preview animation.</div>}</div>
+          <div className="mt-4">
+            {timeline ? <CanvasPlayer timeline={timeline} /> : <div className="text-sm text-zinc-500">Generate to preview animation.</div>}
+          </div>
         </div>
 
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/30 p-5">
@@ -298,7 +329,9 @@ export default function Editor() {
               <div className="space-y-3">
                 {expanded.scenes.map((s) => (
                   <div key={s.index} className="rounded-xl border border-zinc-800 bg-zinc-950/30 p-3">
-                    <div className="text-sm font-semibold">{s.index + 1}. {s.title}</div>
+                    <div className="text-sm font-semibold">
+                      {s.index + 1}. {s.title}
+                    </div>
                     <div className="mt-1 text-xs text-zinc-400">{s.setting}</div>
                     <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-zinc-200">
                       {s.beats.map((b, i) => (

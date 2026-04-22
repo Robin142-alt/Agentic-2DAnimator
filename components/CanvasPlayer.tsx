@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Timeline } from "@/types/timeline";
+import { renderSceneFrame } from "@/animation/renderScene";
 import { SyncEngine } from "@/engine/syncEngine";
-import { drawStickman } from "@/animation/draw";
+import type { Timeline } from "@/types/timeline";
 
 function formatTime(s: number): string {
   const m = Math.floor(s / 60);
@@ -59,38 +59,7 @@ export default function CanvasPlayer({
       const sample = engine.sample();
       setTime(sample.timeGlobal);
       setDialogue(sample.dialogue ?? "");
-
-      // background
-      ctx.clearRect(0, 0, width, height);
-      const grad = ctx.createLinearGradient(0, 0, 0, height);
-      grad.addColorStop(0, "#0a0a0f");
-      grad.addColorStop(1, "#050507");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, width, height);
-
-      const groundY = height - 52;
-      ctx.strokeStyle = "rgba(255,255,255,0.10)";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(0, groundY);
-      ctx.lineTo(width, groundY);
-      ctx.stroke();
-
-      drawStickman(ctx, sample.pose, { scale: 1.25, stroke: "#e5e7eb", lineWidth: 4, groundY });
-
-      // dialogue overlay
-      const text = sample.dialogue?.trim();
-      if (text) {
-        ctx.save();
-        ctx.fillStyle = "rgba(0,0,0,0.55)";
-        ctx.fillRect(18, height - 110, width - 36, 78);
-        ctx.fillStyle = "#f4f4f5";
-        ctx.font = "14px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto";
-        ctx.textBaseline = "top";
-        const line = text.length > 120 ? text.slice(0, 117) + "…" : text;
-        ctx.fillText(line, 30, height - 96);
-        ctx.restore();
-      }
+      renderSceneFrame(ctx, sample, width, height);
 
       rafRef.current = requestAnimationFrame(renderFrame);
     };

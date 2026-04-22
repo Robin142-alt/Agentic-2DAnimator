@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import CanvasPlayer from "@/components/CanvasPlayer";
+import { exportTimelineInBrowser } from "@/lib/clientVideo";
 import type { ExpandedStory } from "@/types/story";
 import type { Timeline } from "@/types/timeline";
-import CanvasPlayer from "@/components/CanvasPlayer";
 
 type StoryPayload = {
   slug: string;
@@ -19,6 +20,7 @@ export default function PlayerBySlug({ slug }: { slug: string }) {
   const [story, setStory] = useState<StoryPayload | null>(null);
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => {
     setBusy(true);
@@ -34,8 +36,11 @@ export default function PlayerBySlug({ slug }: { slug: string }) {
 
   const onExport = async () => {
     if (!story) return;
+
     setBusy(true);
     setError(null);
+    setStatus("Preparing export...");
+
     try {
       const res = await fetch("/api/render", {
         method: "POST",
@@ -43,9 +48,18 @@ export default function PlayerBySlug({ slug }: { slug: string }) {
         body: JSON.stringify({ timeline: story.timeline, config: { width: 720, height: 420, fps: 30, background: "night" } })
       });
       if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        throw new Error(data?.error ?? `Render failed (${res.status})`);
+        const raw = await res.text();
+        let data: any = null;
+        if (raw) {
+          try {
+            data = JSON.parse(raw);
+          } catch {
+            data = null;
+          }
+        }
+        throw new Error(data?.error ?? (raw && raw.length < 300 ? raw : `Render failed (${res.status})`));
       }
+
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -55,8 +69,32 @@ export default function PlayerBySlug({ slug }: { slug: string }) {
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-    } catch (e: any) {
-      setError(e?.message ?? "Export failed");
+      setStatus("MP4 export complete.");
+    } catch (serverError: any) {
+      try {
+        setStatus("Server export unavailable. Recording browser video in real time...");
+        const result = await exportTimelineInBrowser(story.timeline, {
+          width: 720,
+          height: 420,
+          fps: 30,
+          onProgress: (progress) => {
+            setStatus(`Recording browser video... ${Math.round(progress * 100)}%`);
+          }
+        });
+
+        const url = URL.createObjectURL(result.blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${story.slug}.${result.extension}`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        setStatus("Browser video export complete.");
+      } catch (fallbackError: any) {
+        setStatus(null);
+        setError(fallbackError?.message ?? serverError?.message ?? "Export failed");
+      }
     } finally {
       setBusy(false);
     }
@@ -69,7 +107,7 @@ export default function PlayerBySlug({ slug }: { slug: string }) {
           <h1 className="text-xl font-semibold">{story ? story.title : "Player"}</h1>
           {story ? (
             <div className="text-xs text-zinc-400">
-              /player/{story.slug} • {new Date(story.created_at).toLocaleString()}
+              /player/{story.slug} - {new Date(story.created_at).toLocaleString()}
             </div>
           ) : null}
         </div>
@@ -82,13 +120,14 @@ export default function PlayerBySlug({ slug }: { slug: string }) {
             onClick={onExport}
             className="rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-zinc-900 hover:bg-zinc-200 disabled:opacity-50"
           >
-            Export MP4
+            Export Video
           </button>
         </div>
       </div>
 
       {error ? <div className="text-sm text-red-300">{error}</div> : null}
-      {busy && !story ? <div className="text-sm text-zinc-400">Loading…</div> : null}
+      {status ? <div className="text-sm text-emerald-300">{status}</div> : null}
+      {busy && !story ? <div className="text-sm text-zinc-400">Loading...</div> : null}
 
       {story ? (
         <div className="grid gap-6 lg:grid-cols-2">
@@ -118,4 +157,3 @@ export default function PlayerBySlug({ slug }: { slug: string }) {
     </main>
   );
 }
-
