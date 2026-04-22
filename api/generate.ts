@@ -7,20 +7,25 @@ const BodySchema = z.object({
 });
 
 export async function handleGenerate(req: Request): Promise<Response> {
-  const rl = rateLimit(req, "generate", { windowMs: 60_000, max: 20 });
-  if (!rl.ok) {
-    return new Response(JSON.stringify({ error: "Rate limited" }), {
-      status: 429,
-      headers: { "content-type": "application/json", "retry-after": String(rl.retryAfterSec ?? 60) }
-    });
-  }
+  try {
+    const rl = rateLimit(req, "generate", { windowMs: 60_000, max: 20 });
+    if (!rl.ok) {
+      return new Response(JSON.stringify({ error: "Rate limited" }), {
+        status: 429,
+        headers: { "content-type": "application/json", "retry-after": String(rl.retryAfterSec ?? 60) }
+      });
+    }
 
-  const json = await req.json().catch(() => null);
-  const parsed = BodySchema.safeParse(json);
-  if (!parsed.success) {
-    return Response.json({ error: "Invalid request", issues: parsed.error.issues }, { status: 400 });
-  }
+    const json = await req.json().catch(() => null);
+    const parsed = BodySchema.safeParse(json);
+    if (!parsed.success) {
+      return Response.json({ error: "Invalid request", issues: parsed.error.issues }, { status: 400 });
+    }
 
-  const { expanded, timeline } = await generateFromText(parsed.data.text);
-  return Response.json({ expanded, timeline });
+    const { expanded, timeline } = await generateFromText(parsed.data.text);
+    return Response.json({ expanded, timeline });
+  } catch (error) {
+    console.error("Generation failed", error);
+    return Response.json({ error: "Generation failed" }, { status: 500 });
+  }
 }
