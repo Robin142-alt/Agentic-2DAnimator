@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: stickstory
+    ports:
+      - "5432:5432"
+    volumes:
+      - stickstory_db:/var/lib/postgresql/data
+      - ./scripts/schema.sql:/docker-entrypoint-initdb.d/001_schema.sql:ro
+
+volumes:
+  stickstory_db:
+
