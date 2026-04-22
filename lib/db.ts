@@ -9,7 +9,16 @@ export function getPool(): pg.Pool {
   if (_pool) return _pool;
   const connectionString = env().DATABASE_URL;
   const isProd = process.env.NODE_ENV === "production";
-  _pool = new Pool({ connectionString, max: isProd ? 10 : 5, idleTimeoutMillis: 30_000 });
+  const enableChannelBinding = /(^|[?&])channel_binding=require(&|$)/i.test(connectionString);
+  const max = isProd ? Number(process.env.PG_POOL_MAX ?? 3) || 3 : 5;
+  _pool = new Pool({
+    connectionString,
+    max,
+    idleTimeoutMillis: 30_000,
+    connectionTimeoutMillis: 10_000,
+    keepAlive: true,
+    enableChannelBinding
+  } as any);
   return _pool;
 }
 
