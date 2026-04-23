@@ -1,8 +1,8 @@
 import { spawn } from "node:child_process";
-import ffmpegPath from "ffmpeg-static";
 import { logStage } from "@/lib/pipeline";
 
 export async function runFfmpeg(args: string[], opts?: { cwd?: string; traceId?: string }): Promise<void> {
+  const { default: ffmpegPath } = await import("ffmpeg-static");
   const bin = ffmpegPath;
   if (!bin) throw new Error("ffmpeg-static did not provide an ffmpeg binary path");
   if (opts?.traceId) {

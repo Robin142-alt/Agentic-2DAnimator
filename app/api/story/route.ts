@@ -1,4 +1,4 @@
-import { handleStory } from "@/api/story";
+import { handleStory } from "@/server/story";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

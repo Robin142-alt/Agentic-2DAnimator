@@ -63,7 +63,6 @@ export async function handleAuth(req: Request): Promise<Response> {
     }
   }
 
-  // login
   const { email, password } = parsed.data;
   const res = await sql<{ id: string; email: string; password_hash: string; created_at: string }>(
     "select id, email, password_hash, created_at::text as created_at from users where email = $1",

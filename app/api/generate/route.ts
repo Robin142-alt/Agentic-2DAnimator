@@ -1,4 +1,4 @@
-import { handleGenerate } from "@/api/generate";
+import { handleGenerate } from "@/server/generate";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

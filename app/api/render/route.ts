@@ -1,4 +1,4 @@
-import { handleRenderMp4 } from "@/api/render";
+import { handleRenderMp4 } from "@/server/render";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

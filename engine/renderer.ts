@@ -1,4 +1,3 @@
-import { createCanvas } from "@napi-rs/canvas";
 import fs from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import os from "node:os";
@@ -94,6 +93,7 @@ export async function renderTimelineToMp4File(timeline: Timeline, cfg?: Partial<
 
     await fs.mkdir(framesDir, { recursive: true });
 
+    const { createCanvas } = await import("@napi-rs/canvas");
     const canvas = createCanvas(config.width, config.height);
     const ctx = canvas.getContext("2d");
     const engine = new SyncEngine(timeline, { baseX: config.width * 0.5, seedKey: JSON.stringify(timeline) });

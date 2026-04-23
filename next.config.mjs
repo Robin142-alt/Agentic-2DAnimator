@@ -2,7 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   serverExternalPackages: ["@napi-rs/canvas", "ffmpeg-static", "pg", "bcryptjs", "jsonwebtoken"],
-  output: "standalone",
   poweredByHeader: false,
   async headers() {
     return [
