@@ -12,7 +12,8 @@
     "start": "next start",
     "lint": "next lint",
     "db:sql": "node scripts/print-db-sql.mjs",
-    "db:migrate": "node scripts/migrate.mjs"
+    "db:migrate": "node scripts/migrate.mjs",
+    "test:minimal-pipeline": "node scripts/minimal-pipeline-test.mjs"
   },
   "dependencies": {
     "@napi-rs/canvas": "0.1.70",

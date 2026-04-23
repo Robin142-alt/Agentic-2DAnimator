@@ -60,7 +60,7 @@ export default function Editor() {
     try {
       const data = await fetchJson<{ expanded: ExpandedStory; timeline: Timeline }>("/api/generate", {
         method: "POST",
-        body: JSON.stringify({ text })
+        body: JSON.stringify({ text, renderVideo: false })
       });
       setExpanded(data.expanded);
       setTimeline(data.timeline);

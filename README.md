@@ -97,3 +97,27 @@ Render endpoint notes:
 
 - `/api/render` runs server-side FFmpeg + native canvas; large dependencies may hit the `250MB` function limit. If that happens, set `VERCEL_ANALYZE_BUILD_OUTPUT=1` and redeploy to inspect function size.
 - For long renders, you may eventually want to offload rendering to a separate worker service instead of keeping it inline in the request/response path.
+
+## Minimal Pipeline Test
+
+Run the hardcoded end-to-end smoke test:
+
+```bash
+npm run test:minimal-pipeline
+```
+
+What it does:
+
+- Builds the app
+- Starts the production server locally
+- Sends `POST /api/generate` with the input `A guy walks into a room and says hello`
+- Forces video generation with `renderVideo: true`
+- Verifies the returned `video.path` exists and the file size is greater than zero
+
+You can also test manually against the local server:
+
+```bash
+curl -X POST http://localhost:3000/api/generate ^
+  -H "Content-Type: application/json" ^
+  -d "{\"text\":\"A guy walks into a room and says hello\",\"renderVideo\":true}"
+```

@@ -8,6 +8,7 @@ import type { RenderConfig, Timeline } from "@/types/timeline";
 import { SyncEngine } from "@/engine/syncEngine";
 import { drawStickman } from "@/animation/draw";
 import { runFfmpeg } from "@/lib/ffmpeg";
+import { createTrace, logStage, logError, validateFileOutput } from "@/lib/pipeline";
 
 type RenderResult = {
   mp4Path: string;
@@ -68,12 +69,19 @@ function background(ctx: any, width: number, height: number, kind: RenderConfig[
 
 export async function renderTimelineToMp4File(timeline: Timeline, cfg?: Partial<RenderConfig>): Promise<RenderResult> {
   return withSemaphore(async () => {
+    const trace = createTrace("renderer");
     const config: RenderConfig = {
       width: clamp(cfg?.width ?? 720, 320, 1920),
       height: clamp(cfg?.height ?? 420, 240, 1080),
       fps: clamp(cfg?.fps ?? 30, 10, 60),
       background: cfg?.background ?? "night"
     };
+    logStage(trace, "render", "video render started", {
+      width: config.width,
+      height: config.height,
+      fps: config.fps,
+      duration: timeline.total_duration
+    });
 
     if (timeline.total_duration > 60 * 10 + 0.001) {
       throw new Error("Timeline exceeds 10 minutes. Reduce total_duration or render at a lower fps.");
@@ -92,6 +100,10 @@ export async function renderTimelineToMp4File(timeline: Timeline, cfg?: Partial<
 
     const totalFrames = Math.ceil(timeline.total_duration * config.fps);
     const groundY = config.height - 52;
+    logStage(trace, "render", "frame rendering starting", {
+      totalFrames,
+      framesDir
+    });
 
     for (let i = 0; i < totalFrames; i++) {
       const t = i / config.fps;
@@ -124,27 +136,46 @@ export async function renderTimelineToMp4File(timeline: Timeline, cfg?: Partial<
       const buf = canvas.toBuffer("image/png");
       await fs.writeFile(file, buf);
     }
+    logStage(trace, "render", "frame rendering completed", {
+      totalFrames,
+      sampleFrame: path.join(framesDir, "frame_000001.png")
+    });
 
-    await runFfmpeg(
-      [
-        "-y",
-        "-hide_banner",
-        "-loglevel",
-        "error",
-        "-framerate",
-        String(config.fps),
-        "-i",
-        path.join(framesDir, "frame_%06d.png"),
-        "-c:v",
-        "libx264",
-        "-pix_fmt",
-        "yuv420p",
-        "-movflags",
-        "+faststart",
-        mp4Path
-      ],
-      { cwd: jobDir }
-    );
+    try {
+      await runFfmpeg(
+        [
+          "-y",
+          "-hide_banner",
+          "-loglevel",
+          "error",
+          "-framerate",
+          String(config.fps),
+          "-i",
+          path.join(framesDir, "frame_%06d.png"),
+          "-c:v",
+          "libx264",
+          "-pix_fmt",
+          "yuv420p",
+          "-movflags",
+          "+faststart",
+          mp4Path
+        ],
+        { cwd: jobDir, traceId: trace.id }
+      );
+    } catch (error) {
+      logError(trace, "ffmpeg", error, { mp4Path, framesDir });
+      throw error;
+    }
+
+    const output = await validateFileOutput(mp4Path);
+    logStage(trace, "render", "video export completed", {
+      mp4Path,
+      exists: output.exists,
+      sizeBytes: output.sizeBytes
+    });
+    if (!output.exists || output.sizeBytes <= 0) {
+      throw new Error(`Rendered MP4 file is missing or empty: ${mp4Path}`);
+    }
 
     const cleanup = async () => {
       try {
