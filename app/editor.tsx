@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import CanvasPlayer from "@/components/CanvasPlayer";
-import { exportTimelineInBrowser } from "@/lib/clientVideo";
+import { exportTimelineInBrowser, shouldPreferBrowserVideoExport } from "@/lib/clientVideo";
 import type { ExpandedStory } from "@/types/story";
 import type { Timeline } from "@/types/timeline";
 
@@ -124,6 +124,10 @@ export default function Editor() {
     setBusy(true);
 
     try {
+      if (shouldPreferBrowserVideoExport()) {
+        throw new Error("Hosted browser export preferred");
+      }
+
       const res = await fetch("/api/render", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -155,7 +159,7 @@ export default function Editor() {
       setStatus("MP4 export complete.");
     } catch (serverError: any) {
       try {
-        setStatus("Server export unavailable. Recording browser video in real time...");
+        setStatus("Recording browser video in real time...");
         const result = await exportTimelineInBrowser(timeline, {
           width: 720,
           height: 420,

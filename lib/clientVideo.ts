@@ -8,6 +8,11 @@ type ExportResult = {
   mimeType: string;
 };
 
+export function shouldPreferBrowserVideoExport(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.location.hostname.endsWith(".vercel.app");
+}
+
 function getSupportedMimeType(): string {
   const candidates = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
   for (const candidate of candidates) {
