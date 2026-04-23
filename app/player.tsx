@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import CanvasPlayer from "@/components/CanvasPlayer";
+import ExportedVideoPanel from "@/components/ExportedVideoPanel";
 import { exportTimelineInBrowser, shouldPreferBrowserVideoExport } from "@/lib/clientVideo";
 import type { ExpandedStory } from "@/types/story";
 import type { Timeline } from "@/types/timeline";
@@ -21,6 +22,9 @@ export default function PlayerBySlug({ slug }: { slug: string }) {
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoFilename, setVideoFilename] = useState("stickstory.webm");
+  const [videoMimeType, setVideoMimeType] = useState<string | undefined>();
 
   useEffect(() => {
     setBusy(true);
@@ -33,6 +37,12 @@ export default function PlayerBySlug({ slug }: { slug: string }) {
       .catch((e) => setError(String(e?.message ?? e)))
       .finally(() => setBusy(false));
   }, [slug]);
+
+  useEffect(() => {
+    return () => {
+      if (videoUrl) URL.revokeObjectURL(videoUrl);
+    };
+  }, [videoUrl]);
 
   const onExport = async () => {
     if (!story) return;
@@ -66,6 +76,10 @@ export default function PlayerBySlug({ slug }: { slug: string }) {
 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
+      if (videoUrl) URL.revokeObjectURL(videoUrl);
+      setVideoUrl(url);
+      setVideoFilename(`${story.slug}.mp4`);
+      setVideoMimeType(blob.type || "video/mp4");
       const a = document.createElement("a");
       a.href = url;
       a.download = `${story.slug}.mp4`;
@@ -87,6 +101,10 @@ export default function PlayerBySlug({ slug }: { slug: string }) {
         });
 
         const url = URL.createObjectURL(result.blob);
+        if (videoUrl) URL.revokeObjectURL(videoUrl);
+        setVideoUrl(url);
+        setVideoFilename(`${story.slug}.${result.extension}`);
+        setVideoMimeType(result.mimeType);
         const a = document.createElement("a");
         a.href = url;
         a.download = `${story.slug}.${result.extension}`;
@@ -141,6 +159,13 @@ export default function PlayerBySlug({ slug }: { slug: string }) {
               <CanvasPlayer timeline={story.timeline} autoPlay />
             </div>
           </div>
+
+          <ExportedVideoPanel
+            videoUrl={videoUrl}
+            filename={videoFilename}
+            mimeType={videoMimeType}
+            note="Exported player videos stay available in this session so you can review them before downloading."
+          />
 
           <div className="rounded-2xl border border-zinc-800 bg-zinc-900/30 p-5">
             <div className="text-sm font-semibold text-zinc-200">Story</div>

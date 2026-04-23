@@ -33,8 +33,11 @@ export default function Gallery() {
           Create Story
         </a>
       </div>
+      <div className="text-sm text-zinc-400">
+        Shared stories open in the player view, where visitors can watch the animation timeline and export a video copy.
+      </div>
       {error ? <div className="text-sm text-red-300">{error}</div> : null}
-      {busy ? <div className="text-sm text-zinc-400">Loading…</div> : null}
+      {busy ? <div className="text-sm text-zinc-400">Loading...</div> : null}
       <div className="grid gap-4 md:grid-cols-2">
         {stories.map((s) => (
           <a
@@ -44,7 +47,7 @@ export default function Gallery() {
           >
             <div className="text-sm font-semibold">{s.title}</div>
             <div className="mt-1 text-xs text-zinc-400">{new Date(s.created_at).toLocaleString()}</div>
-            <div className="mt-3 text-sm text-zinc-300">Open →</div>
+            <div className="mt-3 text-sm text-zinc-300">Open player and export video -&gt;</div>
           </a>
         ))}
         {!busy && stories.length === 0 ? (
@@ -54,4 +57,3 @@ export default function Gallery() {
     </main>
   );
 }
-

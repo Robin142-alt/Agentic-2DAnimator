@@ -1,6 +1,7 @@
 import type { ExpandedStory } from "@/types/story";
-import type { Emotion, Timeline, TimelineItem } from "@/types/timeline";
+import type { Asset, CameraPlan, Emotion, SceneArcRole, Timeline, TimelineItem, TransitionStyle, VisualCue } from "@/types/timeline";
 import { clamp01, hashStringToSeed, mulberry32, pick } from "@/engine/rng";
+import { resolveSceneAssets } from "@/lib/assetResolver.js";
 
 const ACTIONS: TimelineItem["action"][] = ["idle", "move", "jump", "interact", "gesture", "talk", "react"];
 
@@ -98,14 +99,90 @@ function beatToItems(
   return items;
 }
 
+function clamp(n: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, n));
+}
+
+function dominantEmotion(scene: ExpandedStory["scenes"][number]): Emotion {
+  const weights = new Map<Emotion, number>([
+    ["neutral", 0],
+    ["happy", 0],
+    ["sad", 0],
+    ["angry", 0],
+    ["nervous", 0]
+  ]);
+
+  for (const beat of scene.beats) {
+    weights.set(beat.emotion, (weights.get(beat.emotion) ?? 0) + 2);
+    for (const line of beat.dialogue) {
+      weights.set(line.emotion, (weights.get(line.emotion) ?? 0) + 1);
+    }
+  }
+
+  return [...weights.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "neutral";
+}
+
+function pickTransition(sceneIndex: number, emotion: Emotion, note: string): TransitionStyle {
+  const normalized = note.toLowerCase();
+  if (sceneIndex === 0) return "cut";
+  if (emotion === "angry" || emotion === "nervous") return "whip";
+  if (normalized.includes("hallway") || normalized.includes("rooftop")) return "slide";
+  return "dissolve";
+}
+
+function arcRoleForScene(scene: ExpandedStory["scenes"][number], sceneCount: number): SceneArcRole {
+  if (scene.beats.some((beat) => beat.kind === "climax")) return "climax";
+  if (scene.index >= sceneCount - 2 || scene.beats.every((beat) => beat.kind === "resolution")) return "resolution";
+  if (scene.index === 0 || scene.beats.some((beat) => beat.kind === "setup")) return "setup";
+  return "conflict";
+}
+
+function planCameraForScene(
+  scene: ExpandedStory["scenes"][number],
+  assets: Asset[],
+  sceneIndex: number,
+  rand: () => number
+): CameraPlan {
+  const note = scene.setting.toLowerCase();
+  const emotion = dominantEmotion(scene);
+  const hasVehicle = assets.some((asset) => asset.category === "vehicle");
+  const hasBuilding = assets.some((asset) => asset.category === "building");
+  const dialogueCount = scene.beats.reduce((sum, beat) => sum + beat.dialogue.length, 0);
+  const hasClimax = scene.beats.some((beat) => beat.kind === "climax");
+
+  let shot: CameraPlan["shot"] = "medium";
+  if (hasClimax || emotion === "angry") shot = "close";
+  else if (hasVehicle || hasBuilding || note.includes("rooftop") || note.includes("market")) shot = "wide";
+  else if (dialogueCount >= 5 || emotion === "sad") shot = "medium";
+  else if (note.includes("street") || note.includes("park")) shot = "tracking";
+
+  const baseZoom =
+    shot === "wide" ? 0.92 : shot === "medium" ? 1.02 : shot === "close" ? 1.18 : 1.08;
+  const panBias = clamp((rand() - 0.5) * 1.4 + (sceneIndex % 2 === 0 ? -0.12 : 0.12), -1, 1);
+
+  return {
+    shot,
+    baseZoom,
+    panBias,
+    transition: pickTransition(sceneIndex, emotion, scene.setting)
+  };
+}
+
 export function buildTimeline(expanded: ExpandedStory): Timeline {
   const seed = hashStringToSeed(JSON.stringify(expanded));
   const rand = mulberry32(seed);
 
   const timeline: TimelineItem[] = [];
+  const visuals: VisualCue[] = [];
+  let cursor = 0;
+
+  const pushItem = (item: TimelineItem) => {
+    timeline.push(item);
+    cursor += Math.max(0.1, item.duration);
+  };
 
   // Cold open
-  timeline.push({
+  pushItem({
     action: "idle",
     style: "speed:normal",
     emotion: "neutral",
@@ -115,7 +192,10 @@ export function buildTimeline(expanded: ExpandedStory): Timeline {
   });
 
   for (const scene of expanded.scenes) {
-    timeline.push({
+    const sceneStart = cursor;
+    const arcRole = arcRoleForScene(scene, expanded.scenes.length);
+
+    pushItem({
       action: "move",
       style: speedStyle(rand, "neutral"),
       emotion: "neutral",
@@ -131,10 +211,10 @@ export function buildTimeline(expanded: ExpandedStory): Timeline {
         beat.summary,
         beat.dialogue.map((d) => ({ text: `${d.speaker}: ${d.text}`, emotion: d.emotion }))
       );
-      for (const it of items) timeline.push(it);
+      for (const it of items) pushItem(it);
 
       if (beat.kind === "climax") {
-        timeline.push({
+        pushItem({
           action: "jump",
           style: speedStyle(rand, beat.emotion),
           emotion: beat.emotion,
@@ -144,10 +224,23 @@ export function buildTimeline(expanded: ExpandedStory): Timeline {
         });
       }
     }
+
+    const assets = resolveSceneAssets(scene);
+    const camera = planCameraForScene(scene, assets, scene.index, rand);
+
+    visuals.push({
+      start: Math.round(sceneStart * 1000) / 1000,
+      end: Math.round(cursor * 1000) / 1000,
+      note: scene.setting,
+      assets,
+      assetNames: assets.map((asset: any) => asset.name),
+      camera,
+      arcRole
+    });
   }
 
   // Outro
-  timeline.push({
+  pushItem({
     action: "idle",
     style: "speed:slow",
     emotion: "happy",
@@ -156,7 +249,5 @@ export function buildTimeline(expanded: ExpandedStory): Timeline {
     dialogue: "The moment settles."
   });
 
-  const total_duration = timeline.reduce((sum, t) => sum + Math.max(0.1, t.duration), 0);
-  return { total_duration: Math.round(total_duration * 1000) / 1000, timeline };
+  return { total_duration: Math.round(cursor * 1000) / 1000, timeline, visuals };
 }
-

@@ -1,0 +1,1371 @@
+{
+  "bus": {
+    "id": "asset:bus",
+    "name": "bus",
+    "normalizedName": "bus",
+    "category": "vehicle",
+    "source": "procedural",
+    "width": 169.333,
+    "height": 78.994,
+    "anchorY": 78.994,
+    "variationSeed": 1607822841,
+    "label": "bus",
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 10,
+        "y": 26.519225154072046,
+        "width": 149.33322106767446,
+        "height": 25.876195054501295,
+        "fill": "#f59e0b",
+        "stroke": "#0f172a",
+        "lineWidth": 3,
+        "radius": 8
+      },
+      {
+        "type": "rect",
+        "x": 26,
+        "y": 10.519225154072046,
+        "width": 67.73328842706978,
+        "height": 18,
+        "fill": "#fbbf24",
+        "stroke": "#0f172a",
+        "lineWidth": 3,
+        "radius": 6
+      },
+      {
+        "type": "rect",
+        "x": 88.05327495519072,
+        "y": 14.519225154072046,
+        "width": 33.86664421353489,
+        "height": 14,
+        "fill": "#93c5fd",
+        "radius": 4
+      },
+      {
+        "type": "circle",
+        "x": 34,
+        "y": 66.99394301511347,
+        "radius": 12.875635662581772,
+        "fill": "#18181b",
+        "stroke": "#d4d4d8",
+        "lineWidth": 3
+      },
+      {
+        "type": "circle",
+        "x": 135.33322106767446,
+        "y": 66.99394301511347,
+        "radius": 12.875635662581772,
+        "fill": "#18181b",
+        "stroke": "#d4d4d8",
+        "lineWidth": 3
+      }
+    ]
+  },
+  "unknown object": {
+    "id": "asset:unknown object",
+    "name": "unknown_object",
+    "normalizedName": "unknown object",
+    "category": "placeholder",
+    "source": "placeholder",
+    "width": 120,
+    "height": 90,
+    "anchorY": 90,
+    "variationSeed": 0,
+    "label": "unknown_object",
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 4,
+        "y": 4,
+        "width": 112,
+        "height": 82,
+        "fill": "#18181b",
+        "stroke": "#f59e0b",
+        "lineWidth": 3,
+        "radius": 8
+      },
+      {
+        "type": "line",
+        "x1": 10,
+        "y1": 10,
+        "x2": 110,
+        "y2": 80,
+        "stroke": "#f59e0b",
+        "lineWidth": 2
+      },
+      {
+        "type": "line",
+        "x1": 110,
+        "y1": 10,
+        "x2": 10,
+        "y2": 80,
+        "stroke": "#f59e0b",
+        "lineWidth": 2
+      },
+      {
+        "type": "text",
+        "x": 60,
+        "y": 37,
+        "text": "unknown_object",
+        "color": "#f4f4f5",
+        "fontSize": 14,
+        "align": "center"
+      }
+    ]
+  },
+  "unnamed asset": {
+    "id": "asset:unnamed asset",
+    "name": "unknown asset",
+    "normalizedName": "unnamed asset",
+    "category": "placeholder",
+    "source": "placeholder",
+    "width": 120,
+    "height": 90,
+    "anchorY": 90,
+    "variationSeed": 0,
+    "label": "unknown asset",
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 4,
+        "y": 4,
+        "width": 112,
+        "height": 82,
+        "fill": "#18181b",
+        "stroke": "#f59e0b",
+        "lineWidth": 3,
+        "radius": 8
+      },
+      {
+        "type": "line",
+        "x1": 10,
+        "y1": 10,
+        "x2": 110,
+        "y2": 80,
+        "stroke": "#f59e0b",
+        "lineWidth": 2
+      },
+      {
+        "type": "line",
+        "x1": 110,
+        "y1": 10,
+        "x2": 10,
+        "y2": 80,
+        "stroke": "#f59e0b",
+        "lineWidth": 2
+      },
+      {
+        "type": "text",
+        "x": 60,
+        "y": 37,
+        "text": "unknown asset",
+        "color": "#f4f4f5",
+        "fontSize": 14,
+        "align": "center"
+      }
+    ]
+  },
+  "bench": {
+    "id": "asset:bench",
+    "name": "bench",
+    "normalizedName": "bench",
+    "category": "prop",
+    "source": "procedural",
+    "width": 113.873,
+    "height": 112.39,
+    "anchorY": 112.39,
+    "variationSeed": 1651424953,
+    "label": "bench",
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 14,
+        "y": 32,
+        "width": 85.87344097904861,
+        "height": 10,
+        "fill": "#a16207",
+        "radius": 3
+      },
+      {
+        "type": "rect",
+        "x": 18,
+        "y": 20,
+        "width": 77.87344097904861,
+        "height": 8,
+        "fill": "#ca8a04",
+        "radius": 3
+      },
+      {
+        "type": "line",
+        "x1": 22,
+        "y1": 42,
+        "x2": 18,
+        "y2": 104.38976432895288,
+        "stroke": "#e5e7eb",
+        "lineWidth": 3
+      },
+      {
+        "type": "line",
+        "x1": 91.87344097904861,
+        "y1": 42,
+        "x2": 95.87344097904861,
+        "y2": 104.38976432895288,
+        "stroke": "#e5e7eb",
+        "lineWidth": 3
+      }
+    ]
+  },
+  "sign": {
+    "id": "asset:sign",
+    "name": "sign",
+    "normalizedName": "sign",
+    "category": "prop",
+    "source": "procedural",
+    "width": 108.764,
+    "height": 97.991,
+    "anchorY": 97.991,
+    "variationSeed": 213683108,
+    "label": "sign",
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 16,
+        "y": 18,
+        "width": 76.76429754123092,
+        "height": 69.99094384070486,
+        "fill": "#374151",
+        "stroke": "#e5e7eb",
+        "lineWidth": 2,
+        "radius": 8
+      },
+      {
+        "type": "line",
+        "x1": 54.38214877061546,
+        "y1": 18,
+        "x2": 54.38214877061546,
+        "y2": 87.99094384070486,
+        "stroke": "#9ca3af",
+        "lineWidth": 2
+      }
+    ]
+  },
+  "car": {
+    "id": "asset:car",
+    "name": "car",
+    "normalizedName": "car",
+    "category": "vehicle",
+    "source": "procedural",
+    "width": 146.124,
+    "height": 74.566,
+    "anchorY": 74.566,
+    "variationSeed": 74733793,
+    "label": "car",
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 10,
+        "y": 31.191295009106398,
+        "width": 126.12395527819172,
+        "height": 24.19772187806666,
+        "fill": "#ef4444",
+        "stroke": "#0f172a",
+        "lineWidth": 3,
+        "radius": 8
+      },
+      {
+        "type": "rect",
+        "x": 26,
+        "y": 15.191295009106398,
+        "width": 58.44958211127669,
+        "height": 18,
+        "fill": "#fbbf24",
+        "stroke": "#0f172a",
+        "lineWidth": 3,
+        "radius": 6
+      },
+      {
+        "type": "rect",
+        "x": 75.9844567446597,
+        "y": 19.191295009106398,
+        "width": 29.224791055638345,
+        "height": 14,
+        "fill": "#93c5fd",
+        "radius": 4
+      },
+      {
+        "type": "circle",
+        "x": 34,
+        "y": 62.56626659911126,
+        "radius": 13.951121786609292,
+        "fill": "#18181b",
+        "stroke": "#d4d4d8",
+        "lineWidth": 3
+      },
+      {
+        "type": "circle",
+        "x": 112.12395527819172,
+        "y": 62.56626659911126,
+        "radius": 13.951121786609292,
+        "fill": "#18181b",
+        "stroke": "#d4d4d8",
+        "lineWidth": 3
+      }
+    ]
+  },
+  "building": {
+    "id": "asset:building",
+    "name": "building",
+    "normalizedName": "building",
+    "category": "building",
+    "source": "procedural",
+    "width": 134.544,
+    "height": 199.51,
+    "anchorY": 199.51,
+    "variationSeed": 954139509,
+    "label": "building",
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 10,
+        "width": 118.54376384848729,
+        "height": 189.51046940404922,
+        "fill": "#334155",
+        "stroke": "#e2e8f0",
+        "lineWidth": 3,
+        "radius": 6
+      },
+      {
+        "type": "rect",
+        "x": 35.8479212828291,
+        "y": 28.702093880809844,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 35.8479212828291,
+        "y": 57.40418776161969,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 35.8479212828291,
+        "y": 86.10628164242954,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 35.8479212828291,
+        "y": 114.80837552323938,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 80.6958425656582,
+        "y": 28.702093880809844,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 80.6958425656582,
+        "y": 57.40418776161969,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 80.6958425656582,
+        "y": 86.10628164242954,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 80.6958425656582,
+        "y": 114.80837552323938,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 53.271881924243644,
+        "y": 151.51046940404922,
+        "width": 28,
+        "height": 38,
+        "fill": "#111827",
+        "stroke": "#f4f4f5",
+        "lineWidth": 2,
+        "radius": 4
+      }
+    ]
+  },
+  "table": {
+    "id": "asset:table",
+    "name": "table",
+    "normalizedName": "table",
+    "category": "prop",
+    "source": "procedural",
+    "width": 103.356,
+    "height": 106.187,
+    "anchorY": 106.187,
+    "variationSeed": 1251777503,
+    "label": "table",
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 16,
+        "y": 18,
+        "width": 71.35610000044107,
+        "height": 78.18680581543595,
+        "fill": "#374151",
+        "stroke": "#e5e7eb",
+        "lineWidth": 2,
+        "radius": 8
+      },
+      {
+        "type": "line",
+        "x1": 51.67805000022054,
+        "y1": 18,
+        "x2": 51.67805000022054,
+        "y2": 96.18680581543595,
+        "stroke": "#9ca3af",
+        "lineWidth": 2
+      }
+    ]
+  },
+  "shop": {
+    "id": "asset:shop",
+    "name": "shop",
+    "normalizedName": "shop",
+    "category": "building",
+    "source": "category",
+    "width": 129.275,
+    "height": 187.953,
+    "anchorY": 187.953,
+    "variationSeed": 4064497377,
+    "label": "shop",
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 10,
+        "width": 113.27511959103867,
+        "height": 177.953362995293,
+        "fill": "#334155",
+        "stroke": "#e2e8f0",
+        "lineWidth": 3,
+        "radius": 6
+      },
+      {
+        "type": "rect",
+        "x": 23.31877989775967,
+        "y": 21.992227165882166,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 23.31877989775967,
+        "y": 43.98445433176433,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 23.31877989775967,
+        "y": 65.9766814976465,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 23.31877989775967,
+        "y": 87.96890866352867,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 23.31877989775967,
+        "y": 109.96113582941084,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 55.63755979551934,
+        "y": 21.992227165882166,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 55.63755979551934,
+        "y": 43.98445433176433,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 55.63755979551934,
+        "y": 65.9766814976465,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 55.63755979551934,
+        "y": 87.96890866352867,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 55.63755979551934,
+        "y": 109.96113582941084,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 87.956339693279,
+        "y": 21.992227165882166,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 87.956339693279,
+        "y": 43.98445433176433,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 87.956339693279,
+        "y": 65.9766814976465,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 87.956339693279,
+        "y": 87.96890866352867,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 87.956339693279,
+        "y": 109.96113582941084,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 50.63755979551934,
+        "y": 139.953362995293,
+        "width": 28,
+        "height": 38,
+        "fill": "#111827",
+        "stroke": "#f4f4f5",
+        "lineWidth": 2,
+        "radius": 4
+      }
+    ]
+  },
+  "workshop": {
+    "id": "asset:workshop",
+    "name": "workshop",
+    "normalizedName": "workshop",
+    "category": "building",
+    "source": "procedural",
+    "width": 145.697,
+    "height": 191.384,
+    "anchorY": 191.384,
+    "variationSeed": 3580368908,
+    "label": "workshop",
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 10,
+        "width": 129.69651063438505,
+        "height": 181.38405714044347,
+        "fill": "#334155",
+        "stroke": "#e2e8f0",
+        "lineWidth": 3,
+        "radius": 6
+      },
+      {
+        "type": "rect",
+        "x": 27.424127658596262,
+        "y": 22.564009523407247,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 27.424127658596262,
+        "y": 45.128019046814494,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 27.424127658596262,
+        "y": 67.69202857022174,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 27.424127658596262,
+        "y": 90.25603809362899,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 27.424127658596262,
+        "y": 112.82004761703624,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 63.848255317192525,
+        "y": 22.564009523407247,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 63.848255317192525,
+        "y": 45.128019046814494,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 63.848255317192525,
+        "y": 67.69202857022174,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 63.848255317192525,
+        "y": 90.25603809362899,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 63.848255317192525,
+        "y": 112.82004761703624,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 100.27238297578879,
+        "y": 22.564009523407247,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 100.27238297578879,
+        "y": 45.128019046814494,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 100.27238297578879,
+        "y": 67.69202857022174,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 100.27238297578879,
+        "y": 90.25603809362899,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 100.27238297578879,
+        "y": 112.82004761703624,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 58.848255317192525,
+        "y": 143.38405714044347,
+        "width": 28,
+        "height": 38,
+        "fill": "#111827",
+        "stroke": "#f4f4f5",
+        "lineWidth": 2,
+        "radius": 4
+      }
+    ]
+  },
+  "rooftop": {
+    "id": "asset:rooftop",
+    "name": "rooftop",
+    "normalizedName": "rooftop",
+    "category": "building",
+    "source": "category",
+    "width": 138.206,
+    "height": 199.51,
+    "anchorY": 199.51,
+    "variationSeed": 3744439612,
+    "label": "rooftop",
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 10,
+        "width": 122.20640135696158,
+        "height": 189.50954563729465,
+        "fill": "#334155",
+        "stroke": "#e2e8f0",
+        "lineWidth": 3,
+        "radius": 6
+      },
+      {
+        "type": "rect",
+        "x": 37.068800452320524,
+        "y": 28.70190912745893,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 37.068800452320524,
+        "y": 57.40381825491786,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 37.068800452320524,
+        "y": 86.10572738237678,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 37.068800452320524,
+        "y": 114.80763650983572,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 83.13760090464105,
+        "y": 28.70190912745893,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 83.13760090464105,
+        "y": 57.40381825491786,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 83.13760090464105,
+        "y": 86.10572738237678,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 83.13760090464105,
+        "y": 114.80763650983572,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 55.10320067848079,
+        "y": 151.50954563729465,
+        "width": 28,
+        "height": 38,
+        "fill": "#111827",
+        "stroke": "#f4f4f5",
+        "lineWidth": 2,
+        "radius": 4
+      }
+    ]
+  },
+  "lamp": {
+    "id": "asset:lamp",
+    "name": "lamp",
+    "normalizedName": "lamp",
+    "category": "prop",
+    "source": "procedural",
+    "width": 108.495,
+    "height": 104.952,
+    "anchorY": 104.952,
+    "variationSeed": 1810951995,
+    "label": "lamp",
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 16,
+        "y": 18,
+        "width": 76.49505181983113,
+        "height": 76.95153568312526,
+        "fill": "#374151",
+        "stroke": "#e5e7eb",
+        "lineWidth": 2,
+        "radius": 8
+      },
+      {
+        "type": "line",
+        "x1": 54.247525909915566,
+        "y1": 18,
+        "x2": 54.247525909915566,
+        "y2": 94.95153568312526,
+        "stroke": "#9ca3af",
+        "lineWidth": 2
+      }
+    ]
+  },
+  "hallway": {
+    "id": "asset:hallway",
+    "name": "hallway",
+    "normalizedName": "hallway",
+    "category": "building",
+    "source": "procedural",
+    "width": 120.885,
+    "height": 220.971,
+    "anchorY": 220.971,
+    "variationSeed": 4186463897,
+    "label": "hallway",
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 10,
+        "width": 104.88465893361717,
+        "height": 210.97143959114328,
+        "fill": "#334155",
+        "stroke": "#e2e8f0",
+        "lineWidth": 3,
+        "radius": 6
+      },
+      {
+        "type": "rect",
+        "x": 21.221164733404294,
+        "y": 32.99428791822866,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 21.221164733404294,
+        "y": 65.98857583645731,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 21.221164733404294,
+        "y": 98.98286375468598,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 21.221164733404294,
+        "y": 131.97715167291463,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 51.44232946680859,
+        "y": 32.99428791822866,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 51.44232946680859,
+        "y": 65.98857583645731,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 51.44232946680859,
+        "y": 98.98286375468598,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 51.44232946680859,
+        "y": 131.97715167291463,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 81.66349420021288,
+        "y": 32.99428791822866,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 81.66349420021288,
+        "y": 65.98857583645731,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 81.66349420021288,
+        "y": 98.98286375468598,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 81.66349420021288,
+        "y": 131.97715167291463,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 46.44232946680859,
+        "y": 172.97143959114328,
+        "width": 28,
+        "height": 38,
+        "fill": "#111827",
+        "stroke": "#f4f4f5",
+        "lineWidth": 2,
+        "radius": 4
+      }
+    ]
+  },
+  "house": {
+    "id": "asset:house",
+    "name": "house",
+    "normalizedName": "house",
+    "category": "building",
+    "source": "procedural",
+    "width": 148.235,
+    "height": 178.488,
+    "anchorY": 178.488,
+    "variationSeed": 217793883,
+    "label": "house",
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 10,
+        "width": 132.2349099740386,
+        "height": 168.4881773130037,
+        "fill": "#334155",
+        "stroke": "#e2e8f0",
+        "lineWidth": 3,
+        "radius": 6
+      },
+      {
+        "type": "rect",
+        "x": 40.41163665801287,
+        "y": 24.497635462600737,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 40.41163665801287,
+        "y": 48.995270925201474,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 40.41163665801287,
+        "y": 73.49290638780221,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 40.41163665801287,
+        "y": 97.99054185040295,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 89.82327331602573,
+        "y": 24.497635462600737,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 89.82327331602573,
+        "y": 48.995270925201474,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 89.82327331602573,
+        "y": 73.49290638780221,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 89.82327331602573,
+        "y": 97.99054185040295,
+        "width": 18,
+        "height": 22,
+        "fill": "#fde68a",
+        "stroke": "#0f172a",
+        "lineWidth": 1.5,
+        "radius": 2
+      },
+      {
+        "type": "rect",
+        "x": 60.1174549870193,
+        "y": 130.4881773130037,
+        "width": 28,
+        "height": 38,
+        "fill": "#111827",
+        "stroke": "#f4f4f5",
+        "lineWidth": 2,
+        "radius": 4
+      }
+    ]
+  },
+  "tree": {
+    "id": "asset:tree",
+    "name": "tree",
+    "normalizedName": "tree",
+    "category": "prop",
+    "source": "procedural",
+    "width": 107.47,
+    "height": 90.503,
+    "anchorY": 90.503,
+    "variationSeed": 1837839573,
+    "label": "tree",
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 45.73519273567945,
+        "y": 50.50279384618625,
+        "width": 16,
+        "height": 34,
+        "fill": "#78350f"
+      },
+      {
+        "type": "circle",
+        "x": 53.73519273567945,
+        "y": 24,
+        "radius": 24,
+        "fill": "#22c55e",
+        "stroke": "#14532d",
+        "lineWidth": 3
+      },
+      {
+        "type": "circle",
+        "x": 35.73519273567945,
+        "y": 34,
+        "radius": 16,
+        "fill": "#16a34a"
+      },
+      {
+        "type": "circle",
+        "x": 69.73519273567945,
+        "y": 36,
+        "radius": 14,
+        "fill": "#16a34a"
+      }
+    ]
+  }
+}

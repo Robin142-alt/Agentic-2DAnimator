@@ -1,18 +1,52 @@
 import type { StickPose } from "@/animation/pose";
+import type { Emotion } from "@/types/timeline";
 
 export type DrawOptions = {
   scale: number;
   stroke: string;
   lineWidth: number;
   groundY: number;
+  mouthOpen?: number;
+  emotion?: Emotion;
+  opacity?: number;
 };
 
 function rotVec(len: number, angle: number): { x: number; y: number } {
   return { x: Math.sin(angle) * len, y: Math.cos(angle) * len };
 }
 
+function drawMouth(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radius: number,
+  mouthOpen: number,
+  emotion: Emotion
+) {
+  const open = Math.max(0, Math.min(1, mouthOpen));
+  const mouthY = y + radius * 0.35;
+  const width = radius * 0.6;
+
+  ctx.beginPath();
+  if (open > 0.12) {
+    const mouthH = radius * (0.14 + open * 0.24);
+    ctx.ellipse(x, mouthY, width * 0.42, mouthH, 0, 0, Math.PI * 2);
+  } else if (emotion === "happy") {
+    ctx.arc(x, mouthY - radius * 0.05, width * 0.6, 0.12 * Math.PI, 0.88 * Math.PI);
+  } else if (emotion === "sad") {
+    ctx.arc(x, mouthY + radius * 0.65, width * 0.55, 1.15 * Math.PI, 1.85 * Math.PI);
+  } else if (emotion === "angry") {
+    ctx.moveTo(x - width * 0.5, mouthY + radius * 0.04);
+    ctx.lineTo(x + width * 0.5, mouthY - radius * 0.1);
+  } else {
+    ctx.moveTo(x - width * 0.5, mouthY);
+    ctx.lineTo(x + width * 0.5, mouthY);
+  }
+  ctx.stroke();
+}
+
 export function drawStickman(ctx: CanvasRenderingContext2D, pose: StickPose, opts: DrawOptions): void {
-  const { scale, stroke, lineWidth, groundY } = opts;
+  const { scale, stroke, lineWidth, groundY, mouthOpen = 0, emotion = "neutral", opacity = 1 } = opts;
   const headR = 14 * scale;
   const torsoLen = 42 * scale;
   const upperArm = 22 * scale;
@@ -75,18 +109,17 @@ export function drawStickman(ctx: CanvasRenderingContext2D, pose: StickPose, opt
   })();
 
   ctx.save();
+  ctx.globalAlpha = opacity;
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
   ctx.strokeStyle = stroke;
   ctx.lineWidth = lineWidth;
 
-  // torso
   ctx.beginPath();
   ctx.moveTo(neck.x, neck.y);
   ctx.lineTo(hip.x, hip.y);
   ctx.stroke();
 
-  // arms
   ctx.beginPath();
   ctx.moveTo(shoulders.left.x, shoulders.left.y);
   ctx.lineTo(leftElbow.x, leftElbow.y);
@@ -96,7 +129,6 @@ export function drawStickman(ctx: CanvasRenderingContext2D, pose: StickPose, opt
   ctx.lineTo(rightHand.x, rightHand.y);
   ctx.stroke();
 
-  // legs
   ctx.beginPath();
   ctx.moveTo(hips.left.x, hips.left.y);
   ctx.lineTo(leftKnee.x, leftKnee.y);
@@ -106,18 +138,23 @@ export function drawStickman(ctx: CanvasRenderingContext2D, pose: StickPose, opt
   ctx.lineTo(rightFoot.x, rightFoot.y);
   ctx.stroke();
 
-  // head
   ctx.beginPath();
   ctx.arc(head.x, head.y, headR, 0, Math.PI * 2);
   ctx.stroke();
 
-  // simple face (tilt)
-  const faceDir = pose.headTilt;
+  const eyeY = head.y - headR * 0.12;
+  const eyeOffsetX = headR * 0.35;
+  const eyeLen = headR * (emotion === "nervous" ? 0.16 : 0.12);
+  const browTilt = emotion === "angry" ? 0.22 : emotion === "sad" ? -0.16 : 0;
+
   ctx.beginPath();
-  ctx.moveTo(head.x - Math.cos(faceDir) * (headR * 0.35), head.y - Math.sin(faceDir) * (headR * 0.1));
-  ctx.lineTo(head.x + Math.cos(faceDir) * (headR * 0.35), head.y + Math.sin(faceDir) * (headR * 0.1));
+  ctx.moveTo(head.x - eyeOffsetX - eyeLen, eyeY - browTilt * headR * 0.2);
+  ctx.lineTo(head.x - eyeOffsetX + eyeLen, eyeY + browTilt * headR * 0.2);
+  ctx.moveTo(head.x + eyeOffsetX - eyeLen, eyeY + browTilt * headR * 0.2);
+  ctx.lineTo(head.x + eyeOffsetX + eyeLen, eyeY - browTilt * headR * 0.2);
   ctx.stroke();
+
+  drawMouth(ctx, head.x, head.y, headR, mouthOpen, emotion);
 
   ctx.restore();
 }
-

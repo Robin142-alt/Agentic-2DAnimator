@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import CanvasPlayer from "@/components/CanvasPlayer";
+import ExportedVideoPanel from "@/components/ExportedVideoPanel";
 import { exportTimelineInBrowser, shouldPreferBrowserVideoExport } from "@/lib/clientVideo";
 import type { ExpandedStory } from "@/types/story";
 import type { Timeline } from "@/types/timeline";
@@ -35,6 +36,9 @@ export default function Editor() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoFilename, setVideoFilename] = useState("stickstory.webm");
+  const [videoMimeType, setVideoMimeType] = useState<string | undefined>();
 
   const [me, setMe] = useState<MeResponse["user"]>(null);
   const [email, setEmail] = useState("");
@@ -50,12 +54,23 @@ export default function Editor() {
       .catch(() => setMe(null));
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (videoUrl) URL.revokeObjectURL(videoUrl);
+    };
+  }, [videoUrl]);
+
   const canSave = useMemo(() => Boolean(me && expanded && timeline), [me, expanded, timeline]);
 
   const onGenerate = async () => {
     setError(null);
     setStatus(null);
     setSavedSlug(null);
+    if (videoUrl) {
+      URL.revokeObjectURL(videoUrl);
+      setVideoUrl(null);
+      setVideoMimeType(undefined);
+    }
     setBusy(true);
     try {
       const data = await fetchJson<{ expanded: ExpandedStory; timeline: Timeline }>("/api/generate", {
@@ -149,6 +164,10 @@ export default function Editor() {
 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
+      if (videoUrl) URL.revokeObjectURL(videoUrl);
+      setVideoUrl(url);
+      setVideoFilename("stickstory.mp4");
+      setVideoMimeType(blob.type || "video/mp4");
       const a = document.createElement("a");
       a.href = url;
       a.download = "stickstory.mp4";
@@ -170,6 +189,10 @@ export default function Editor() {
         });
 
         const url = URL.createObjectURL(result.blob);
+        if (videoUrl) URL.revokeObjectURL(videoUrl);
+        setVideoUrl(url);
+        setVideoFilename(`stickstory.${result.extension}`);
+        setVideoMimeType(result.mimeType);
         const a = document.createElement("a");
         a.href = url;
         a.download = `stickstory.${result.extension}`;
@@ -319,6 +342,13 @@ export default function Editor() {
             {timeline ? <CanvasPlayer timeline={timeline} /> : <div className="text-sm text-zinc-500">Generate to preview animation.</div>}
           </div>
         </div>
+
+        <ExportedVideoPanel
+          videoUrl={videoUrl}
+          filename={videoFilename}
+          mimeType={videoMimeType}
+          note="After export, the finished video appears here so you can review it before downloading or sharing."
+        />
 
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/30 p-5">
           <div className="text-sm font-semibold text-zinc-200">Expanded Story</div>

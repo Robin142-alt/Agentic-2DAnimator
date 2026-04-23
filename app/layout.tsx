@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "StickStory AI",
-  description: "Text → story → stickman animation → video → share"
+  description: "Text -> story -> stickman animation -> video -> share"
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -26,11 +26,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </header>
           {children}
           <footer className="mt-12 border-t border-zinc-800 pt-6 text-xs text-zinc-400">
-            Deterministic pipeline: input → expansion → director → timeline → animation → render.
+            Deterministic pipeline: input -&gt; expansion -&gt; director -&gt; timeline -&gt; animation -&gt; render.
           </footer>
         </div>
       </body>
     </html>
   );
 }
-

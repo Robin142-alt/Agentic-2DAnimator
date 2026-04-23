@@ -5,7 +5,7 @@ import path from "node:path";
 import { nanoid } from "nanoid";
 import type { RenderConfig, Timeline } from "@/types/timeline";
 import { SyncEngine } from "@/engine/syncEngine";
-import { drawStickman } from "@/animation/draw";
+import { renderSceneFrame } from "@/animation/renderScene";
 import { runFfmpeg } from "@/lib/ffmpeg";
 import { createTrace, logStage, logError, validateFileOutput } from "@/lib/pipeline";
 
@@ -44,28 +44,6 @@ async function withSemaphore<T>(fn: () => Promise<T>): Promise<T> {
   }
 }
 
-function background(ctx: any, width: number, height: number, kind: RenderConfig["background"]) {
-  if (kind === "paper") {
-    ctx.fillStyle = "#0b0b10";
-    ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = "rgba(255,255,255,0.06)";
-    for (let y = 0; y < height; y += 24) {
-      ctx.fillRect(0, y, width, 1);
-    }
-    return;
-  }
-  if (kind === "night") {
-    const g = ctx.createLinearGradient(0, 0, 0, height);
-    g.addColorStop(0, "#050510");
-    g.addColorStop(1, "#000000");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, width, height);
-    return;
-  }
-  ctx.fillStyle = "#050507";
-  ctx.fillRect(0, 0, width, height);
-}
-
 export async function renderTimelineToMp4File(timeline: Timeline, cfg?: Partial<RenderConfig>): Promise<RenderResult> {
   return withSemaphore(async () => {
     const trace = createTrace("renderer");
@@ -79,7 +57,8 @@ export async function renderTimelineToMp4File(timeline: Timeline, cfg?: Partial<
       width: config.width,
       height: config.height,
       fps: config.fps,
-      duration: timeline.total_duration
+      duration: timeline.total_duration,
+      visuals: timeline.visuals?.length ?? 0
     });
 
     if (timeline.total_duration > 60 * 10 + 0.001) {
@@ -99,7 +78,6 @@ export async function renderTimelineToMp4File(timeline: Timeline, cfg?: Partial<
     const engine = new SyncEngine(timeline, { baseX: config.width * 0.5, seedKey: JSON.stringify(timeline) });
 
     const totalFrames = Math.ceil(timeline.total_duration * config.fps);
-    const groundY = config.height - 52;
     logStage(trace, "render", "frame rendering starting", {
       totalFrames,
       framesDir
@@ -108,34 +86,13 @@ export async function renderTimelineToMp4File(timeline: Timeline, cfg?: Partial<
     for (let i = 0; i < totalFrames; i++) {
       const t = i / config.fps;
       const sample = engine.sample(t);
-
-      background(ctx, config.width, config.height, config.background);
-      ctx.strokeStyle = "rgba(255,255,255,0.10)";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(0, groundY);
-      ctx.lineTo(config.width, groundY);
-      ctx.stroke();
-
-      drawStickman(ctx as any, sample.pose, { scale: 1.25, stroke: "#e5e7eb", lineWidth: 4, groundY });
-
-      const text = sample.dialogue?.trim();
-      if (text) {
-        ctx.save();
-        ctx.fillStyle = "rgba(0,0,0,0.6)";
-        ctx.fillRect(18, config.height - 110, config.width - 36, 78);
-        ctx.fillStyle = "#f4f4f5";
-        ctx.font = "14px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto";
-        ctx.textBaseline = "top";
-        const line = text.length > 130 ? text.slice(0, 127) + "…" : text;
-        ctx.fillText(line, 30, config.height - 96);
-        ctx.restore();
-      }
+      renderSceneFrame(ctx as any, sample, config.width, config.height, { background: config.background });
 
       const file = path.join(framesDir, `frame_${String(i + 1).padStart(6, "0")}.png`);
       const buf = canvas.toBuffer("image/png");
       await fs.writeFile(file, buf);
     }
+
     logStage(trace, "render", "frame rendering completed", {
       totalFrames,
       sampleFrame: path.join(framesDir, "frame_000001.png")

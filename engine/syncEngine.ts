@@ -1,4 +1,4 @@
-import type { Timeline, TimelineItem } from "@/types/timeline";
+import type { Asset, CameraPlan, Timeline, TimelineItem, VisualCue } from "@/types/timeline";
 import type { StickPose } from "@/animation/pose";
 import { parseStyle } from "@/engine/style";
 import { clamp01, hashStringToSeed, mulberry32 } from "@/engine/rng";
@@ -23,6 +23,13 @@ export type Sample = {
   timeLocal: number;
   pose: StickPose;
   dialogue: string;
+  assets: Asset[];
+  sceneNote: string;
+  visual: VisualCue | null;
+  previousVisual: VisualCue | null;
+  sceneProgress: number;
+  transitionProgress: number;
+  camera: CameraPlan;
 };
 
 export class SyncEngine {
@@ -111,7 +118,29 @@ export class SyncEngine {
     })();
 
     pose.rootX = rootX;
-    return { item: seg.item, timeGlobal: t, timeLocal: local, pose, dialogue: seg.item.dialogue };
+    const visualInfo = this.findVisual(t);
+    const visual = visualInfo.current;
+    const visualDuration = visual ? Math.max(0.001, visual.end - visual.start) : 1;
+    const sceneProgress = visual ? clamp01((t - visual.start) / visualDuration) : 0;
+    const transitionWindow = visual ? Math.min(1.2, Math.max(0.35, visualDuration * 0.18)) : 0;
+    const transitionProgress =
+      visual && visualInfo.previous && visual.camera.transition !== "cut"
+        ? clamp01((t - visual.start) / transitionWindow)
+        : 1;
+    return {
+      item: seg.item,
+      timeGlobal: t,
+      timeLocal: local,
+      pose,
+      dialogue: seg.item.dialogue,
+      assets: visual?.assets ?? [],
+      sceneNote: visual?.note ?? "",
+      visual,
+      previousVisual: visualInfo.previous,
+      sceneProgress,
+      transitionProgress,
+      camera: visual?.camera ?? { shot: "medium", baseZoom: 1, panBias: 0, transition: "cut" }
+    };
   }
 
   private buildSegments(): Segment[] {
@@ -154,5 +183,25 @@ export class SyncEngine {
       endX: 0
     };
   }
-}
 
+  private findVisual(t: number): { current: VisualCue | null; previous: VisualCue | null; next: VisualCue | null } {
+    const visuals = this.timeline.visuals ?? [];
+    if (!visuals.length) return { current: null, previous: null, next: null };
+    if (t < visuals[0]!.start) return { current: null, previous: null, next: visuals[0]! };
+    for (let index = 0; index < visuals.length; index++) {
+      const visual = visuals[index]!;
+      if (t >= visual.start && t < visual.end) {
+        return {
+          current: visual,
+          previous: visuals[index - 1] ?? null,
+          next: visuals[index + 1] ?? null
+        };
+      }
+    }
+    const last = visuals[visuals.length - 1]!;
+    if (t <= last.end) {
+      return { current: last, previous: visuals[visuals.length - 2] ?? null, next: null };
+    }
+    return { current: null, previous: last, next: null };
+  }
+}

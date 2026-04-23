@@ -4,8 +4,8 @@ export default function HomePage() {
       <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
         <h1 className="text-2xl font-semibold tracking-tight">StickStory AI</h1>
         <p className="mt-2 text-sm text-zinc-300">
-          Convert text into a structured story, a deterministic animation timeline, a canvas stickman animation, and an
-          MP4 render via FFmpeg. Save and share stories in a public gallery.
+          Convert text into a structured story, a deterministic animation timeline, a canvas stickman animation, and a
+          finished video export. Save and share stories in a public gallery.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <a
@@ -25,9 +25,9 @@ export default function HomePage() {
 
       <div className="grid gap-4 md:grid-cols-3">
         {[
-          ["Story Expansion", "Short input expands into 5–10 scenes with structure, dialogue, pacing, and emotion."],
-          ["Director Engine", "Abstract actions + modifiers become a valid timeline JSON with smooth flow."],
-          ["Animation + Render", "Canvas stickman playback, plus server-side MP4 export via FFmpeg."]
+          ["Story Expansion", "Short input expands into 5-10 scenes with structure, dialogue, pacing, and emotion."],
+          ["Director Engine", "Abstract actions plus modifiers become valid timeline JSON with smooth flow."],
+          ["Playback + Video", "Canvas playback lives beside export controls and an in-app video preview surface."]
         ].map(([title, desc]) => (
           <div key={title} className="rounded-2xl border border-zinc-800 bg-zinc-900/20 p-5">
             <div className="text-sm font-semibold">{title}</div>
@@ -35,7 +35,21 @@ export default function HomePage() {
           </div>
         ))}
       </div>
+
+      <div className="rounded-2xl border border-zinc-800 bg-zinc-900/20 p-6">
+        <h2 className="text-sm font-semibold text-zinc-100">Interface coverage</h2>
+        <div className="mt-3 grid gap-3 md:grid-cols-3">
+          <div className="rounded-xl border border-zinc-800 bg-zinc-950/30 p-4 text-sm text-zinc-300">
+            Live stickman playback with scrubbing, play/pause controls, and dialogue overlays.
+          </div>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-950/30 p-4 text-sm text-zinc-300">
+            Finished exported video preview inside the editor and on the shared player page.
+          </div>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-950/30 p-4 text-sm text-zinc-300">
+            Save and share through the gallery, then reopen stories in a dedicated player route.
+          </div>
+        </div>
+      </div>
     </main>
   );
 }
-
