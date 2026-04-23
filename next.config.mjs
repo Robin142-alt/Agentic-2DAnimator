@@ -2,6 +2,20 @@
 const nextConfig = {
   reactStrictMode: true,
   serverExternalPackages: ["@napi-rs/canvas", "ffmpeg-static", "pg", "bcryptjs", "jsonwebtoken"],
+  outputFileTracingIncludes: {
+    "/api/generate": [
+      "./node_modules/ffmpeg-static/**/*",
+      "./node_modules/@napi-rs/canvas/**/*",
+      "./node_modules/@napi-rs/canvas-linux-x64-gnu/**/*",
+      "./node_modules/@napi-rs/canvas-linux-x64-musl/**/*"
+    ],
+    "/api/render": [
+      "./node_modules/ffmpeg-static/**/*",
+      "./node_modules/@napi-rs/canvas/**/*",
+      "./node_modules/@napi-rs/canvas-linux-x64-gnu/**/*",
+      "./node_modules/@napi-rs/canvas-linux-x64-musl/**/*"
+    ]
+  },
   poweredByHeader: false,
   async headers() {
     return [
