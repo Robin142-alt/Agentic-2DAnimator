@@ -1,7 +1,7 @@
 import type { Asset, AssetShape, Emotion, RenderConfig, TransitionStyle, VisualCue } from "@/types/timeline";
 import type { Sample } from "@/engine/syncEngine";
 import type { StickPose } from "@/animation/pose";
-import { drawStickman } from "@/animation/draw";
+import { drawStickman, getWobble } from "@/animation/draw";
 
 type DrawingContext = CanvasRenderingContext2D & {
   roundRect?: (x: number, y: number, width: number, height: number, radius: number) => void;
@@ -94,7 +94,16 @@ function backgroundGradient(ctx: DrawingContext, width: number, height: number, 
   ctx.restore();
 }
 
-function drawSkyline(ctx: DrawingContext, width: number, baseY: number, seed: number, color: string, panX: number, alpha = 1) {
+function drawSkyline(
+  ctx: DrawingContext,
+  width: number,
+  baseY: number,
+  seed: number,
+  color: string,
+  panX: number,
+  alpha = 1,
+  time = 0
+) {
   const random = rng(seed);
   ctx.save();
   ctx.globalAlpha = alpha;
@@ -104,21 +113,42 @@ function drawSkyline(ctx: DrawingContext, width: number, baseY: number, seed: nu
   while (x < width + 80) {
     const buildingW = 28 + random() * 44;
     const buildingH = 50 + random() * 120;
-    ctx.fillRect(x, baseY - buildingH, buildingW, buildingH);
+
+    const w = getWobble(seed + x, time, 1);
+    ctx.fillRect(x + w.x, baseY - buildingH + w.y, buildingW, buildingH);
     x += buildingW - 6;
   }
   ctx.restore();
 }
 
-function drawCloud(ctx: DrawingContext, x: number, y: number, scale: number, color: string, panX: number, alpha = 1) {
+function drawCloud(
+  ctx: DrawingContext,
+  x: number,
+  y: number,
+  scale: number,
+  color: string,
+  panX: number,
+  alpha = 1,
+  time = 0,
+  seed = 0
+) {
   ctx.save();
   ctx.globalAlpha = alpha;
   ctx.translate(-panX * 0.08, 0);
   ctx.fillStyle = color;
+
+  const w = (ox: number, oy: number) => {
+    const off = getWobble(seed + ox + oy, time, 1);
+    return { x: ox + off.x, y: oy + off.y };
+  };
+
   ctx.beginPath();
-  ctx.arc(x, y, 18 * scale, 0, Math.PI * 2);
-  ctx.arc(x + 18 * scale, y - 8 * scale, 16 * scale, 0, Math.PI * 2);
-  ctx.arc(x + 36 * scale, y, 14 * scale, 0, Math.PI * 2);
+  const p1 = w(x, y);
+  ctx.arc(p1.x, p1.y, 18 * scale, 0, Math.PI * 2);
+  const p2 = w(x + 18 * scale, y - 8 * scale);
+  ctx.arc(p2.x, p2.y, 16 * scale, 0, Math.PI * 2);
+  const p3 = w(x + 36 * scale, y);
+  ctx.arc(p3.x, p3.y, 14 * scale, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
 }
@@ -151,7 +181,8 @@ function drawThemeBackground(
   theme: SceneTheme,
   note: string,
   panX: number,
-  alpha = 1
+  alpha = 1,
+  time = 0
 ) {
   const lowered = note.toLowerCase();
   const seed = hashString(`${note}:${theme}`);
@@ -159,8 +190,8 @@ function drawThemeBackground(
 
   if (theme === "park") {
     backgroundGradient(ctx, width, height, "#1d4ed8", "#7dd3fc", alpha);
-    drawCloud(ctx, width * 0.18, height * 0.18, 1.1, "rgba(255,255,255,0.82)", panX, alpha);
-    drawCloud(ctx, width * 0.64, height * 0.26, 0.9, "rgba(255,255,255,0.72)", panX, alpha);
+    drawCloud(ctx, width * 0.18, height * 0.18, 1.1, "rgba(255,255,255,0.82)", panX, alpha, time, seed + 1);
+    drawCloud(ctx, width * 0.64, height * 0.26, 0.9, "rgba(255,255,255,0.72)", panX, alpha, time, seed + 2);
     ctx.save();
     ctx.globalAlpha = alpha;
     ctx.fillStyle = "#fde047";
@@ -168,10 +199,19 @@ function drawThemeBackground(
     ctx.arc(width - 90 - panX * 0.04, 84, 26, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = "#166534";
+    const w = (ox: number, oy: number) => {
+      const off = getWobble(seed + ox + oy, time, 1.5);
+      return { x: ox + off.x, y: oy + off.y };
+    };
     ctx.beginPath();
-    ctx.moveTo(0, height - 74);
-    ctx.quadraticCurveTo(width * 0.3, height - 140, width * 0.6, height - 84);
-    ctx.quadraticCurveTo(width * 0.8, height - 50, width, height - 92);
+    const g1 = w(0, height - 74);
+    ctx.moveTo(g1.x, g1.y);
+    const cp1 = w(width * 0.3, height - 140);
+    const g2 = w(width * 0.6, height - 84);
+    ctx.quadraticCurveTo(cp1.x, cp1.y, g2.x, g2.y);
+    const cp2 = w(width * 0.8, height - 50);
+    const g3 = w(width, height - 92);
+    ctx.quadraticCurveTo(cp2.x, cp2.y, g3.x, g3.y);
     ctx.lineTo(width, height);
     ctx.lineTo(0, height);
     ctx.fill();
@@ -183,25 +223,34 @@ function drawThemeBackground(
     backgroundGradient(ctx, width, height, "#3f3f46", "#18181b", alpha);
     ctx.save();
     ctx.globalAlpha = alpha;
+    const w = (ox: number, oy: number) => {
+      const off = getWobble(seed + ox + oy, time, 1.2);
+      return { x: ox + off.x, y: oy + off.y };
+    };
     ctx.fillStyle = "#854d0e";
-    ctx.fillRect(0, height - 96, width, 96);
+    const f1 = w(0, height - 96);
+    ctx.fillRect(f1.x, f1.y, width, 96);
     ctx.fillStyle = "#27272a";
-    ctx.fillRect(0, 0, width, height - 96);
+    const f2 = w(0, 0);
+    ctx.fillRect(f2.x, f2.y, width, height - 96);
     ctx.fillStyle = "#93c5fd";
-    ctx.fillRect(width * 0.12 - panX * 0.1, height * 0.16, width * 0.2, height * 0.22);
+    const win = w(width * 0.12 - panX * 0.1, height * 0.16);
+    ctx.fillRect(win.x, win.y, width * 0.2, height * 0.22);
     ctx.strokeStyle = "#e5e7eb";
     ctx.lineWidth = 3;
-    ctx.strokeRect(width * 0.12 - panX * 0.1, height * 0.16, width * 0.2, height * 0.22);
+    ctx.strokeRect(win.x, win.y, width * 0.2, height * 0.22);
     ctx.fillStyle = "#a16207";
-    ctx.fillRect(width * 0.62 - panX * 0.18, height - 170, width * 0.18, 86);
-    ctx.fillRect(width * 0.64 - panX * 0.18, height - 210, width * 0.14, 26);
+    const tableTop = w(width * 0.62 - panX * 0.18, height - 170);
+    ctx.fillRect(tableTop.x, tableTop.y, width * 0.18, 86);
+    const shelf = w(width * 0.64 - panX * 0.18, height - 210);
+    ctx.fillRect(shelf.x, shelf.y, width * 0.14, 26);
     ctx.restore();
     return;
   }
 
   if (theme === "rooftop") {
     backgroundGradient(ctx, width, height, "#312e81", "#020617", alpha);
-    drawSkyline(ctx, width, height - 50, seed, "rgba(15,23,42,0.88)", panX, alpha);
+    drawSkyline(ctx, width, height - 50, seed, "rgba(15,23,42,0.88)", panX, alpha, time);
     ctx.save();
     ctx.globalAlpha = alpha;
     ctx.fillStyle = "#f8fafc";
@@ -289,7 +338,7 @@ function drawThemeBackground(
 
   if (theme === "street" || theme === "busStop") {
     backgroundGradient(ctx, width, height, theme === "busStop" ? "#111827" : "#0f172a", "#020617", alpha);
-    drawSkyline(ctx, width, height - 40, seed, "rgba(15,23,42,0.95)", panX, alpha);
+    drawSkyline(ctx, width, height - 40, seed, "rgba(15,23,42,0.95)", panX, alpha, time);
     drawLampGlow(ctx, width * 0.18, height, panX, alpha);
     if (theme === "busStop") {
       ctx.save();
@@ -319,27 +368,44 @@ function drawThemeBackground(
   backgroundGradient(ctx, width, height, "#0a0a0f", "#050507", alpha);
 }
 
-function drawGround(ctx: DrawingContext, width: number, groundY: number, theme: SceneTheme, panX: number, alpha = 1) {
+function drawGround(
+  ctx: DrawingContext,
+  width: number,
+  groundY: number,
+  theme: SceneTheme,
+  panX: number,
+  alpha = 1,
+  time = 0
+) {
   ctx.save();
   ctx.globalAlpha = alpha;
   ctx.translate(-panX * 0.24, 0);
   ctx.fillStyle = theme === "park" ? "#166534" : theme === "kitchen" ? "#713f12" : "rgba(255,255,255,0.04)";
-  ctx.fillRect(-40, groundY, width + 80, 60);
+
+  const w = getWobble(12345, time, 0.8);
+  ctx.fillRect(-40 + w.x, groundY + w.y, width + 80, 60);
+
   ctx.strokeStyle = "rgba(255,255,255,0.10)";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(-40, groundY);
-  ctx.lineTo(width + 40, groundY);
+  const p1 = { x: -40 + w.x, y: groundY + w.y };
+  const p2 = { x: width + 40 + w.x, y: groundY + w.y };
+  ctx.moveTo(p1.x, p1.y);
+  ctx.lineTo(p2.x, p2.y);
   ctx.stroke();
   ctx.restore();
 }
 
-function applyRect(ctx: DrawingContext, shape: Extract<AssetShape, { type: "rect" }>) {
+function applyRect(ctx: DrawingContext, shape: Extract<AssetShape, { type: "rect" }>, time = 0, seed = 0) {
+  const w = getWobble(seed + shape.x + shape.y, time, 1);
+  const rx = shape.x + w.x;
+  const ry = shape.y + w.y;
+
   ctx.beginPath();
   if (shape.radius && typeof ctx.roundRect === "function") {
-    ctx.roundRect(shape.x, shape.y, shape.width, shape.height, shape.radius);
+    ctx.roundRect(rx, ry, shape.width, shape.height, shape.radius);
   } else {
-    ctx.rect(shape.x, shape.y, shape.width, shape.height);
+    ctx.rect(rx, ry, shape.width, shape.height);
   }
   if (shape.fill) {
     ctx.fillStyle = shape.fill;
@@ -352,9 +418,10 @@ function applyRect(ctx: DrawingContext, shape: Extract<AssetShape, { type: "rect
   }
 }
 
-function applyCircle(ctx: DrawingContext, shape: Extract<AssetShape, { type: "circle" }>) {
+function applyCircle(ctx: DrawingContext, shape: Extract<AssetShape, { type: "circle" }>, time = 0, seed = 0) {
+  const w = getWobble(seed + shape.x + shape.y, time, 1);
   ctx.beginPath();
-  ctx.arc(shape.x, shape.y, shape.radius, 0, Math.PI * 2);
+  ctx.arc(shape.x + w.x, shape.y + w.y, shape.radius, 0, Math.PI * 2);
   if (shape.fill) {
     ctx.fillStyle = shape.fill;
     ctx.fill();
@@ -366,10 +433,12 @@ function applyCircle(ctx: DrawingContext, shape: Extract<AssetShape, { type: "ci
   }
 }
 
-function applyLine(ctx: DrawingContext, shape: Extract<AssetShape, { type: "line" }>) {
+function applyLine(ctx: DrawingContext, shape: Extract<AssetShape, { type: "line" }>, time = 0, seed = 0) {
+  const w1 = getWobble(seed + shape.x1 + shape.y1, time, 1.2);
+  const w2 = getWobble(seed + shape.x2 + shape.y2, time, 1.2);
   ctx.beginPath();
-  ctx.moveTo(shape.x1, shape.y1);
-  ctx.lineTo(shape.x2, shape.y2);
+  ctx.moveTo(shape.x1 + w1.x, shape.y1 + w1.y);
+  ctx.lineTo(shape.x2 + w2.x, shape.y2 + w2.y);
   ctx.strokeStyle = shape.stroke ?? "#f4f4f5";
   ctx.lineWidth = shape.lineWidth ?? 2;
   ctx.stroke();
@@ -390,7 +459,9 @@ function drawAsset(
   groundY: number,
   scale: number,
   opacity = 1,
-  offsetX = 0
+  offsetX = 0,
+  time = 0,
+  seed = 0
 ) {
   ctx.save();
   ctx.globalAlpha = opacity;
@@ -398,9 +469,9 @@ function drawAsset(
   ctx.scale(scale, scale);
 
   for (const shape of asset.shapes) {
-    if (shape.type === "rect") applyRect(ctx, shape);
-    else if (shape.type === "circle") applyCircle(ctx, shape);
-    else if (shape.type === "line") applyLine(ctx, shape);
+    if (shape.type === "rect") applyRect(ctx, shape, time, seed);
+    else if (shape.type === "circle") applyCircle(ctx, shape, time, seed);
+    else if (shape.type === "line") applyLine(ctx, shape, time, seed);
     else applyText(ctx, shape);
   }
 
@@ -415,7 +486,8 @@ function drawSceneAssets(
   theme: SceneTheme,
   camera: CameraState,
   alpha = 1,
-  layerOffsetX = 0
+  layerOffsetX = 0,
+  time = 0
 ) {
   const buildings = assets.filter((asset) => asset.category === "building" || asset.category === "placeholder");
   const vehicles = assets.filter((asset) => asset.category === "vehicle");
@@ -430,13 +502,15 @@ function drawSceneAssets(
       groundY - (theme === "rooftop" ? 16 : 10),
       (0.92 + index * 0.08) * camera.supportScale,
       0.7 * alpha,
-      layerOffsetX
+      layerOffsetX,
+      time,
+      index + 100
     );
   });
 
   vehicles.slice(0, 1).forEach((asset) => {
     const laneX = theme === "busStop" ? width * 0.18 : width * 0.24;
-    drawAsset(ctx, asset, laneX - camera.panX * 0.38, groundY, 0.94 * camera.supportScale, 0.96 * alpha, layerOffsetX);
+    drawAsset(ctx, asset, laneX - camera.panX * 0.38, groundY, 0.94 * camera.supportScale, 0.96 * alpha, layerOffsetX, time, 200);
   });
 
   props.slice(0, 3).forEach((asset, index) => {
@@ -447,12 +521,14 @@ function drawSceneAssets(
       groundY,
       0.74 * camera.supportScale,
       0.95 * alpha,
-      layerOffsetX
+      layerOffsetX,
+      time,
+      index + 300
     );
   });
 
   characters.slice(0, 1).forEach((asset) => {
-    drawAsset(ctx, asset, width * 0.84 - camera.panX * 0.48, groundY, 0.74 * camera.supportScale, 0.5 * alpha, layerOffsetX);
+    drawAsset(ctx, asset, width * 0.84 - camera.panX * 0.48, groundY, 0.74 * camera.supportScale, 0.5 * alpha, layerOffsetX, time, 400);
   });
 }
 
@@ -513,10 +589,14 @@ function cameraStateForSample(sample: Sample, width: number): CameraState {
     zoom -= (1 - smoothstep(sample.sceneProgress)) * 0.04;
   }
 
-  let focusX = width * 0.5 + sample.camera.panBias * width * 0.08;
-  if (speaker === "Hero") focusX = width * 0.64;
-  else if (speaker === "Other") focusX = width * 0.36;
-  else if (sample.item.action === "move") focusX = sample.pose.rootX;
+  const baseFocusX = width * 0.5 + sample.camera.panBias * width * 0.08;
+  let targetFocusX = baseFocusX;
+  if (speaker === "Hero") targetFocusX = width * 0.64;
+  else if (speaker === "Other") targetFocusX = width * 0.36;
+  else if (sample.item.action === "move") targetFocusX = sample.pose.rootX;
+
+  const cameraSettle = smoothstep(Math.min(1, sample.timeLocal / 0.5));
+  let focusX = baseFocusX * (1 - cameraSettle) + targetFocusX * cameraSettle;
   if (sample.item.action === "react") {
     focusX += speaker === "Hero" ? width * 0.04 : speaker === "Other" ? -width * 0.04 : 0;
   }
@@ -657,7 +737,8 @@ function drawTransitionLayer(
   groundY: number,
   transition: TransitionStyle,
   progress: number,
-  isCurrent: boolean
+  isCurrent: boolean,
+  time = 0
 ) {
   if (!visual) return;
 
@@ -679,9 +760,9 @@ function drawTransitionLayer(
     offsetX = isCurrent ? (1 - progress) * width * 0.92 : -progress * width * 0.92;
   }
 
-  drawThemeBackground(ctx, width, height, theme, visual.note, camera.panX, alpha);
-  drawSceneAssets(ctx, visual.assets, width, groundY, theme, camera, alpha, offsetX);
-  drawGround(ctx, width, groundY, theme, camera.panX + offsetX * 0.12, alpha);
+  drawThemeBackground(ctx, width, height, theme, visual.note, camera.panX, alpha, time);
+  drawSceneAssets(ctx, visual.assets, width, groundY, theme, camera, alpha, offsetX, time);
+  drawGround(ctx, width, groundY, theme, camera.panX + offsetX * 0.12, alpha, time);
 }
 
 export function renderSceneFrame(
@@ -700,12 +781,21 @@ export function renderSceneFrame(
   const progress = smoothstep(sample.transitionProgress);
 
   if (sample.previousVisual && transition !== "cut" && progress < 0.999) {
-    drawTransitionLayer(ctx, sample.previousVisual, width, height, groundY, transition, progress, false);
+    drawTransitionLayer(ctx, sample.previousVisual, width, height, groundY, transition, progress, false, sample.timeGlobal);
   }
 
-  drawThemeBackground(ctx, width, height, theme, sample.sceneNote, camera.panX, transition === "dissolve" ? Math.max(0.75, progress) : 1);
-  drawSceneAssets(ctx, sample.assets, width, groundY, theme, camera, 1);
-  drawGround(ctx, width, groundY, theme, camera.panX);
+  drawThemeBackground(
+    ctx,
+    width,
+    height,
+    theme,
+    sample.sceneNote,
+    camera.panX,
+    transition === "dissolve" ? Math.max(0.75, progress) : 1,
+    sample.timeGlobal
+  );
+  drawSceneAssets(ctx, sample.assets, width, groundY, theme, camera, 1, 0, sample.timeGlobal);
+  drawGround(ctx, width, groundY, theme, camera.panX, 1, sample.timeGlobal);
 
   const speaker = parseSpeaker(sample.dialogue);
   const mainPose = activePoseForSample(sample, width, speaker);
@@ -721,7 +811,9 @@ export function renderSceneFrame(
       groundY: groundY + camera.shakeY * 0.15,
       mouthOpen: 0,
       emotion: "neutral",
-      opacity: 0.82
+      opacity: 0.82,
+      seed: 500,
+      time: sample.timeGlobal
     });
   }
 
@@ -731,7 +823,9 @@ export function renderSceneFrame(
     lineWidth: 4,
     groundY: groundY + camera.shakeY,
     mouthOpen: mouthOpenForSample(sample),
-    emotion: sample.item.emotion as Emotion
+    emotion: sample.item.emotion as Emotion,
+    seed: 600,
+    time: sample.timeGlobal
   });
 
   if (sample.previousVisual && transition === "whip" && progress < 1) {
