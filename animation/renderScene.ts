@@ -649,9 +649,10 @@ function drawSpeakerBadge(ctx: DrawingContext, sample: Sample, width: number) {
   const heading = speaker ? `Scene Speaker: ${speaker}` : "Scene";
   ctx.fillText(heading, 30, 28);
   if (sample.sceneNote) {
+    const headingWidth = ctx.measureText(heading).width;
     ctx.fillStyle = "#a1a1aa";
     const text = sample.sceneNote.length > 48 ? `${sample.sceneNote.slice(0, 45)}...` : sample.sceneNote;
-    ctx.fillText(text, 150, 28);
+    ctx.fillText(text, 30 + headingWidth + 12, 28);
   }
   ctx.restore();
 }
