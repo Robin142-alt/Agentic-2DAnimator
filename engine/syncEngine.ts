@@ -1,5 +1,6 @@
 import type { Asset, CameraPlan, Timeline, TimelineItem, VisualCue } from "@/types/timeline";
 import type { StickPose } from "@/animation/pose";
+import { lerpPose } from "@/animation/pose";
 import { parseStyle } from "@/engine/style";
 import { clamp01, hashStringToSeed, mulberry32 } from "@/engine/rng";
 import { idlePose } from "@/animation/idle";
@@ -106,18 +107,38 @@ export class SyncEngine {
     const jitter = (rand() - 0.5) * 0.4 * intensity;
     const rootX = this.baseX + (seg.startX + (seg.endX - seg.startX) * (local / duration)) + jitter * 2;
 
-    const pose = (() => {
-      if (seg.item.action === "idle") return idlePose(local, mods);
-      if (seg.item.action === "move") return movePose(local, mods);
-      if (seg.item.action === "jump") return jumpPose(local, duration, mods);
-      if (seg.item.action === "gesture") return gesturePose(local, mods);
-      if (seg.item.action === "talk") return talkPose(local, mods);
-      if (seg.item.action === "react") return reactPose(local, duration, mods);
-      if (seg.item.action === "interact") return gesturePose(local, { ...mods, intensity: clamp01(intensity + 0.15) });
-      return idlePose(local, mods);
-    })();
+    const getPoseAt = (s: Segment, time: number) => {
+      const l = Math.max(0, Math.min(s.end - s.start, time - s.start));
+      const d = Math.max(0.001, s.end - s.start);
+      const st = parseStyle(s.item.style);
+      const i = clamp01(s.item.intensity);
+      const m = { speed: st.speed, dir: st.dir, intensity: i, emotion: s.item.emotion } as const;
 
-    pose.rootX = rootX;
+      let p: StickPose;
+      if (s.item.action === "idle") p = idlePose(l, m);
+      else if (s.item.action === "move") p = movePose(l, m);
+      else if (s.item.action === "jump") p = jumpPose(l, d, m);
+      else if (s.item.action === "gesture") p = gesturePose(l, m);
+      else if (s.item.action === "talk") p = talkPose(l, m);
+      else if (s.item.action === "react") p = reactPose(l, d, m);
+      else if (s.item.action === "interact") p = gesturePose(l, { ...m, intensity: clamp01(i + 0.15) });
+      else p = idlePose(l, m);
+
+      p.rootX = this.baseX + (s.startX + (s.endX - s.startX) * (l / d)) + jitter * 2;
+      return p;
+    };
+
+    let pose = getPoseAt(seg, t);
+
+    // Smooth transition between actions
+    const transitionTime = 0.15;
+    const segIdx = this.segments.indexOf(seg);
+    if (segIdx > 0 && local < transitionTime) {
+      const prevSeg = this.segments[segIdx - 1]!;
+      const prevPose = getPoseAt(prevSeg, seg.start);
+      const weight = clamp01(local / transitionTime);
+      pose = lerpPose(prevPose, pose, weight);
+    }
     const visualInfo = this.findVisual(t);
     const visual = visualInfo.current;
     const visualDuration = visual ? Math.max(0.001, visual.end - visual.start) : 1;

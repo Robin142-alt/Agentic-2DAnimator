@@ -60,3 +60,26 @@ export function applyEmotion(pose: StickPose, emotion: Emotion, intensity01: num
   return out;
 }
 
+function lerp(v0: number, v1: number, t: number): number {
+  return v0 * (1 - t) + v1 * t;
+}
+
+function lerpLimb(l0: Limb2, l1: Limb2, t: number): Limb2 {
+  return {
+    a: lerp(l0.a, l1.a, t),
+    b: lerp(l0.b, l1.b, t)
+  };
+}
+
+export function lerpPose(p0: StickPose, p1: StickPose, t: number): StickPose {
+  return {
+    rootX: lerp(p0.rootX, p1.rootX, t),
+    lift: lerp(p0.lift, p1.lift, t),
+    torsoLean: lerp(p0.torsoLean, p1.torsoLean, t),
+    headTilt: lerp(p0.headTilt, p1.headTilt, t),
+    leftArm: lerpLimb(p0.leftArm, p1.leftArm, t),
+    rightArm: lerpLimb(p0.rightArm, p1.rightArm, t),
+    leftLeg: lerpLimb(p0.leftLeg, p1.leftLeg, t),
+    rightLeg: lerpLimb(p0.rightLeg, p1.rightLeg, t)
+  };
+}
